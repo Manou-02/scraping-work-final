@@ -1,9 +1,9 @@
 const endpoint = require('../../utils/endpoints');
 const initialisePage = require('../../utils/initialisePage');
 
-const getUrlLocations = async () => {
+const getAllUrl = async () => {
     try{
-        const url = endpoint.locationFrance.url;
+        const url = endpoint.terrain.url;
         const page = initialisePage(url);
 
         const urlLocations = (await page).evaluate(() => {
@@ -23,9 +23,9 @@ const getUrlLocations = async () => {
 }
 
 
-module.exports.getAllDetailsLocation = async (req, res, next) => {
+module.exports.getAllTerrain = async (req, res, next) => {
     try{
-        const allUrl = await getUrlLocations();
+        const allUrl = await getAllUrl();
         const dataFinal = [];
         for(let i = 0; i < 3; i++){
             console.warn("URL : ", allUrl[i].url );
@@ -46,7 +46,7 @@ module.exports.getAllDetailsLocation = async (req, res, next) => {
                 /** Fin de la recuperation de tous les details */
 
                 docs.titre = document.querySelector('.titleInside h1')?.textContent.split('m²')[0].concat(' m²');
-                docs.type = "Locations";
+                docs.type = "Achat terrain";
                 docs.addresse = document.querySelector('.titleInside h1')?.textContent.split('m²')[1];
                 docs.prix = document.querySelector('.itemPriceContainer .price .thePrice')?.textContent;
                 docs.datePub = document.querySelector('.realEstateAdsMainInfo  span:first-child')?.textContent;
@@ -62,9 +62,7 @@ module.exports.getAllDetailsLocation = async (req, res, next) => {
         }
 
         res.json(dataFinal);
-
     }catch(err){
-        console.log(`Erreur lors de la recuperation de tous les locations\n ${err}`);
+        console.log(`Erreur lors de la recuperation de tous les terrain \n ${err}`);
     }
-
-}
+} 
