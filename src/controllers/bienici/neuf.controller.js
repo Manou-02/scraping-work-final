@@ -1,9 +1,10 @@
 const endpoint = require('../../utils/endpoints');
 const initialisePage = require('../../utils/initialisePage');
 
-const getAllUrlAchat = async () => {
+
+const getAllUrlNeuf = async () => {
     try{
-        const url = endpoint.achatFrance.url;
+        const url = endpoint.neuf.url;
         const page = initialisePage(url);
 
         const urlAchat = (await page).evaluate(() => {
@@ -20,25 +21,13 @@ const getAllUrlAchat = async () => {
     }catch(err){
         console.error(`Erreur lors de la recuperation de tous les URL \n ${err}`)
     }
-
 }
 
-const donnee = {
-    titre :"",
-    addresse : "",
-    prix: "",
-    datePub : "",
-    refAnnonce : "",
-    description : "",
-    details : [],
-    aproposQuartier : ""
-}
 
-module.exports.getAllAchat = async (req, res, next) => {
-    
+module.exports.getAllNeuf = async (req, res, next) => {
     try{
         const dataFinal = [];
-        const allUrl = await getAllUrlAchat();
+        const allUrl = await getAllUrlNeuf();
         for(let i = 0; i < 3; i++){
             console.warn("URL : ", allUrl[i].url );
             const url = allUrl[i].url;
@@ -58,7 +47,7 @@ module.exports.getAllAchat = async (req, res, next) => {
                 /** Fin de la recuperation de tous les details */
 
                 docs.titre = document.querySelector('.titleInside h1')?.textContent.split('m²')[0].concat(' m²');
-                docs.type = "Achat";
+                docs.type = "Neuf";
                 docs.addresse = document.querySelector('.titleInside h1')?.textContent.split('m²')[1];
                 docs.prix = document.querySelector('.itemPriceContainer .price .thePrice')?.textContent;
                 docs.datePub = document.querySelector('.realEstateAdsMainInfo  span:first-child')?.textContent;
@@ -74,7 +63,7 @@ module.exports.getAllAchat = async (req, res, next) => {
         }
 
         res.json(dataFinal);
-    }catch(err){
-        console.log(`Erreur lors de la recuperation de tous les achats\n ${err}`);
+    }catch(err) {
+        console.log(`Erreur lors de la recuperation de tous les appartement neuf \n ${err}`);
     }
 }
