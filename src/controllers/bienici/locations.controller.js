@@ -1,5 +1,6 @@
 const endpoint = require('../../utils/endpoints');
 const initialisePage = require('../../utils/initialisePage');
+const fs = require('fs');
 
 const getUrlLocations = async () => {
     try{
@@ -46,8 +47,8 @@ module.exports.getAllDetailsLocation = async (req, res, next) => {
                 /** Fin de la recuperation de tous les details */
 
                 docs.titre = document.querySelector('.titleInside h1')?.textContent.split('m²')[0].concat(' m²');
-                docs.type = "Locations";
                 docs.addresse = document.querySelector('.titleInside h1')?.textContent.split('m²')[1];
+                docs.type = "Locations";
                 docs.prix = document.querySelector('.itemPriceContainer .price .thePrice')?.textContent;
                 docs.datePub = document.querySelector('.realEstateAdsMainInfo  span:first-child')?.textContent;
                 docs.refAnnonce = document.querySelector('.realEstateAdsMainInfo  span:nth-child(3)')?.textContent;
@@ -60,6 +61,17 @@ module.exports.getAllDetailsLocation = async (req, res, next) => {
             })
             dataFinal.push(details)
         }
+        fs.writeFile('./output/bienici/locations.json', JSON.stringify(dataFinal, null, 2), err => {
+            if(err){
+                console.log("=================================");
+                console.log(`Erreur lors de l'ecriture du fichier JSON\n ${err}`);
+                console.log("=================================");
+            }else{
+                console.log("=================================");
+                console.log(`Success`);
+                console.log("=================================");
+            }
+        })
 
         res.json(dataFinal);
 

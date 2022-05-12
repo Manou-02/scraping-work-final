@@ -1,5 +1,6 @@
 const endpoint = require('../../utils/endpoints');
 const initialisePage = require('../../utils/initialisePage');
+const fs = require('fs');
 
 
 const getAllUrlNeuf = async () => {
@@ -28,7 +29,7 @@ module.exports.getAllNeuf = async (req, res, next) => {
     try{
         const dataFinal = [];
         const allUrl = await getAllUrlNeuf();
-        for(let i = 0; i < 3; i++){
+        for(let i = 3; i < 6; i++){
             console.warn("URL : ", allUrl[i].url );
             const url = allUrl[i].url;
             const page = await initialisePage(url);
@@ -47,8 +48,8 @@ module.exports.getAllNeuf = async (req, res, next) => {
                 /** Fin de la recuperation de tous les details */
 
                 docs.titre = document.querySelector('.titleInside h1')?.textContent.split('m²')[0].concat(' m²');
-                docs.type = "Neuf";
                 docs.addresse = document.querySelector('.titleInside h1')?.textContent.split('m²')[1];
+                docs.type = "Neuf";
                 docs.prix = document.querySelector('.itemPriceContainer .price .thePrice')?.textContent;
                 docs.datePub = document.querySelector('.realEstateAdsMainInfo  span:first-child')?.textContent;
                 docs.refAnnonce = document.querySelector('.realEstateAdsMainInfo  span:nth-child(3)')?.textContent;
@@ -58,6 +59,17 @@ module.exports.getAllNeuf = async (req, res, next) => {
 
                 console.log("donnee : ", docs.titre);
                 return docs;
+            })
+            fs.writeFile('./output/bienici/neuf.json', JSON.stringify(dataFinal, null, 2), err => {
+                if(err){
+                    console.log("=================================");
+                    console.log(`Erreur lors de l'ecriture du fichier JSON\n ${err}`);
+                    console.log("=================================");
+                }else{
+                    console.log("=================================");
+                    console.log(`Success`);
+                    console.log("=================================");
+                }
             })
             dataFinal.push(details)
         }
