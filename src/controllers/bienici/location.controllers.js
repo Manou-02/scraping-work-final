@@ -1,26 +1,32 @@
 const endpoint = require('../../utils/endpoints');
 const initialisePage = require('../../utils/initialisePage');
+require('events').EventEmitter.defaultMaxListeners = 3000;    
 
 
 const getDetailsLocation = async (data) => {
+    let dataFinal = [];
 
-    await data.map(async response => {
-        const url = response.url;
+    for (let i = 0; i < 4; i++) {
+        const url = data[i].url;
         let page = await initialisePage(url);
-
-        const details = await page.evaluate(() => {
+        
+        let details = '';
+        details = await page.evaluate(function(){
             let donnee = [];
             let elements = document.querySelectorAll('.allDetails .labelInfo');
             for(element of elements){
                 donnee.push(element.textContent)
             }
-            return donnee;
+            console.log("Donnee", donnee);
+            return donnee
         }) 
-        console.log(details);
-        response.details = details;
-    })
-    console.log(data);
-    return data;
+        
+        dataFinal.push({...data[i], details});
+    }
+
+    console.log("DATAFINAL " + dataFinal);
+
+    return dataFinal;
 } 
 
 const getHomeLocation = async () => {
@@ -33,6 +39,7 @@ const getHomeLocation = async () => {
             let elements = document.querySelectorAll("article.sideListItem");
             
             for(element of elements){
+
                 data.push({
                     titre : element.querySelector('.detailsContainer  h3.descriptionTitle')?.textContent.split('m²')[0].concat(" m²"),
                     adresse : element.querySelector('.detailsContainer h3.descriptionTitle span')?.textContent,
@@ -55,12 +62,14 @@ const getHomeLocation = async () => {
 
 
 module.exports.getAllLocation = async (req, res, next) => {
-    try{
-        const homeLocation = await getHomeLocation();
-        const detailsLocation = await getDetailsLocation(homeLocation);
+    try{       
+        
+        await getHomeLocation().then(async response => {
+            await response &&  getDetailsLocation(response).then(async data => {
+                await data && res.json(data);
+            })
+        })
 
-        // console.log(detailsLocation);
-        return res.json(detailsLocation);
     }catch(err){
         console.log(`Erreur in getAllLocatin \n${err}`);
         return res.send(err);
