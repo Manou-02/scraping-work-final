@@ -6,7 +6,7 @@ require('events').EventEmitter.defaultMaxListeners = 3000;
 const getDetailsLocation = async (data) => {
     let dataFinal = [];
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 2; i++) {
         const url = data[i].url;
         let page = await initialisePage(url);
         
@@ -23,8 +23,6 @@ const getDetailsLocation = async (data) => {
         
         dataFinal.push({...data[i], details});
     }
-
-    console.log("DATAFINAL " + dataFinal);
 
     return dataFinal;
 } 
@@ -47,13 +45,13 @@ const getHomeLocation = async () => {
                     prixDetail : element.querySelector('.detailsContainer div.price span.perMonth')?.textContent,
                     description : element.querySelector('.detailsContainer div.descriptionContent')?.textContent.split('\n').join(' '),
                     url : element.querySelector('.sideListItemContainer .detailsContainer .details a.detailedSheetLink').href,
-                    details : []
+                    details : [],
+                    datePublication : '',
+                    refAnnonce : '',
                 });
             }   
-            // console.log(data);
             return data;
         });
-        // console.log({data : location})
         return location;
     }catch(err){
         console.log(`Erreur lors de la recuperation des données \n${err}`);
