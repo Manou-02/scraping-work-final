@@ -1,5 +1,5 @@
 module.exports.achatFrance = {
-    "url" : "https://www.bienici.com/recherche/achat/france"
+    "url" : "https://www.bienici.com/recherche/achat/france?page="
 }
 
 module.exports.locationFrance = {

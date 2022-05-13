@@ -6,7 +6,7 @@ const fs = require('fs');
 const getAllUrlNeuf = async () => {
     try{
         const url = endpoint.neuf.url;
-        const page = initialisePage(url);
+        const page = await initialisePage(url);
 
         const urlAchat = (await page).evaluate(() => {
             let data = [];

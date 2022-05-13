@@ -5,7 +5,7 @@ const fs = require('fs');
 const getAllUrl = async () => {
     try{
         const url = endpoint.terrain.url;
-        const page = initialisePage(url);
+        const page = await initialisePage(url);
 
         const urlLocations = (await page).evaluate(() => {
             let data = [];

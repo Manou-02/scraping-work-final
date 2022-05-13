@@ -4,20 +4,39 @@ const fs = require('fs');
 
 const getAllUrlAchat = async () => {
     try{
-        const url = endpoint.achatFrance.url;
-        const page = initialisePage(url);
+        let allUrl = [];
 
-        const urlAchat = (await page).evaluate(() => {
-            let data = [];
-            let elements = document.querySelectorAll('article.sideListItem')
-            for(element of elements){
-                data.push({
-                    url : element.querySelector('.sideListItemContainer .detailsContainer .details a.detailedSheetLink').href
-                });
+        for (let i = 50; i < 100  ; i++) {
+                       
+            let url = endpoint.achatFrance.url +i;
+            const page = await initialisePage(url);
+    
+            const urlAchat = await page.evaluate(() => {
+                let data = [];
+                let elements = document.querySelectorAll('article.sideListItem')
+                for(element of elements){
+                    data.push({
+                        url : element.querySelector('.sideListItemContainer .detailsContainer .details a.detailedSheetLink').href
+                    });
+                }
+                return data;
+            })
+            console.log(urlAchat);
+            allUrl = [...allUrl, ...urlAchat];
+            
+        }
+        fs.writeFile('./output/bienici/url/achat.json', JSON.stringify(allUrl, null, 2), err => {
+            if(err){
+                console.log("=================================");
+                console.log(`Erreur lors de l'ecriture du fichier JSON\n ${err}`);
+                console.log("=================================");
+            }else{
+                console.log("=================================");
+                console.log(`Success`);
+                console.log("=================================");
             }
-            return data;
         })
-        return urlAchat;
+        return allUrl;
     }catch(err){
         console.error(`Erreur lors de la recuperation de tous les URL \n ${err}`)
     }
@@ -74,7 +93,7 @@ module.exports.getAllAchat = async (req, res, next) => {
             dataFinal.push(details)
         }
 
-        fs.writeFile('./output/bienici/achat.json', JSON.stringify(dataFinal, null, 2), err => {
+        fs.writeFile('./output/bienici/donnee/achat.json', JSON.stringify(dataFinal, null, 2), err => {
             if(err){
                 console.log("=================================");
                 console.log(`Erreur lors de l'ecriture du fichier JSON\n ${err}`);
@@ -86,7 +105,7 @@ module.exports.getAllAchat = async (req, res, next) => {
             }
         })
 
-        res.json(dataFinal);
+        res.json(details);
     }catch(err){
         console.log(`Erreur lors de la recuperation de tous les achats\n ${err}`);
     }

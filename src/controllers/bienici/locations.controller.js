@@ -5,7 +5,7 @@ const fs = require('fs');
 const getUrlLocations = async () => {
     try{
         const url = endpoint.locationFrance.url;
-        const page = initialisePage(url);
+        const page = await initialisePage(url);
 
         const urlLocations = (await page).evaluate(() => {
             let data = [];
@@ -46,7 +46,7 @@ module.exports.getAllDetailsLocation = async (req, res, next) => {
                 }
                 /** Fin de la recuperation de tous les details */
 
-                docs.titre = document.querySelector('.titleInside h1')?.textContent.split('m²')[0].concat(' m²');
+                docs.titre = document.querySelector('.titleInside h1')?.textContent.split('m²')[0].concat(' m²').trim();
                 docs.addresse = document.querySelector('.titleInside h1')?.textContent.split('m²')[1];
                 docs.type = "Locations";
                 docs.prix = document.querySelector('.itemPriceContainer .price .thePrice')?.textContent;
