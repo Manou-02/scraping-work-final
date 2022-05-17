@@ -1,12 +1,13 @@
 const endpoint = require('../../utils/endpoints');
 const initialisePage = require('../../utils/initialisePage');
 const fs = require('fs');
+// const finalUrl = require('../../../output/bienici/url/achat2.json');
 
 const getAllUrlAchat = async () => {
     try{
         let allUrl = [];
 
-        for (let i = 50; i < 100  ; i++) {
+        for (let i = 6; i < 9; i++) {
                        
             let url = endpoint.achatFrance.url +i;
             const page = await initialisePage(url);
@@ -25,17 +26,6 @@ const getAllUrlAchat = async () => {
             allUrl = [...allUrl, ...urlAchat];
             
         }
-        fs.writeFile('./output/bienici/url/achat.json', JSON.stringify(allUrl, null, 2), err => {
-            if(err){
-                console.log("=================================");
-                console.log(`Erreur lors de l'ecriture du fichier JSON\n ${err}`);
-                console.log("=================================");
-            }else{
-                console.log("=================================");
-                console.log(`Success`);
-                console.log("=================================");
-            }
-        })
         return allUrl;
     }catch(err){
         console.error(`Erreur lors de la recuperation de tous les URL \n ${err}`)
@@ -59,7 +49,8 @@ module.exports.getAllAchat = async (req, res, next) => {
     try{
         const dataFinal = [];
         const allUrl = await getAllUrlAchat();
-        for(let i = 0; i < 3; i++){
+        // const allUrl = await getAllUrlAchat();
+        for(let i = 0; i < allUrl.length; i++){
             console.warn("URL : ", allUrl[i].url );
             const url = allUrl[i].url;
             const page = await initialisePage(url);
@@ -92,20 +83,19 @@ module.exports.getAllAchat = async (req, res, next) => {
             })
             dataFinal.push(details)
         }
-
-        fs.writeFile('./output/bienici/donnee/achat.json', JSON.stringify(dataFinal, null, 2), err => {
+        
+        fs.writeFile('./output/bienici/donnee/achat3.json', JSON.stringify(dataFinal, null, 2), err => {
             if(err){
                 console.log("=================================");
                 console.log(`Erreur lors de l'ecriture du fichier JSON\n ${err}`);
                 console.log("=================================");
             }else{
                 console.log("=================================");
-                console.log(`Success`);
+                console.log(`Success: Data recuperer`);
                 console.log("=================================");
             }
         })
-
-        res.json(details);
+        res.json(dataFinal);
     }catch(err){
         console.log(`Erreur lors de la recuperation de tous les achats\n ${err}`);
     }
